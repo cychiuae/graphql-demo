@@ -8,3 +8,5 @@ generates:
       useIndexSignature: true
       nonOptionalTypename: true
       avoidOptionals: true
+      mappers:
+        User: ../model/user#DataSourceUser
