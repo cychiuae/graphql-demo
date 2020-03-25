@@ -1,0 +1,10 @@
+schema: ./schema/*.graphql
+generates:
+  ./src/generated/graphql.ts:
+    plugins:
+      - typescript
+      - typescript-resolvers
+    config:
+      useIndexSignature: true
+      nonOptionalTypename: true
+      avoidOptionals: true
