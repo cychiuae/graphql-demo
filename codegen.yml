@@ -5,6 +5,7 @@ generates:
       - typescript
       - typescript-resolvers
     config:
+      contextType: ../resolvers/context#Context
       useIndexSignature: true
       nonOptionalTypename: true
       avoidOptionals: true

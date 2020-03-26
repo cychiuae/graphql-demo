@@ -1,16 +1,5 @@
-import { UserResolvers, Resolvers, QueryResolvers } from "../generated/graphql";
-
-const userResolver: UserResolvers = {
-  id: ({ id }) => id,
-  name: ({ name }) => name,
-};
-
-const queryUserByID: QueryResolvers["user"] = () => {
-  return {
-    id: "id",
-    name: "name",
-  };
-};
+import { Resolvers } from "../generated/graphql";
+import { queryUserByID, userResolver } from "./user";
 
 const resolvers: Resolvers = {
   Query: {

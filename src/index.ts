@@ -2,11 +2,18 @@ import path from "path";
 import express from "express";
 import { ApolloServer } from "apollo-server-express";
 import { importSchema } from "graphql-import";
+
 import resolvers from "./resolvers";
+import { UserDataSource } from "./datasource/UserDataSource";
 
 const apolloServer = new ApolloServer({
   typeDefs: importSchema(path.join(__dirname, "..", "schema", "root.graphql")),
   resolvers: resolvers,
+  context: () => {
+    return {
+      userDatasource: new UserDataSource(),
+    };
+  },
   playground: {
     settings: {
       "editor.theme": "dark",
