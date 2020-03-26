@@ -3,6 +3,19 @@ type User {
   name: String!
 }
 
+type Message {
+  id: ID!
+  createdAt: Int!
+  content: String!
+  sender: User!
+}
+
+type Conversation {
+  id: ID!
+  topic: String!
+  messages: [Message!]!
+}
+
 type Query {
   user(id: ID!): User
 }

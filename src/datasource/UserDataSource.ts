@@ -1,5 +1,4 @@
 import { DataSourceUser } from "../model/user";
-import { sleep } from "../utils";
 
 const UserDatabase: DataSourceUser[] = [
   {
@@ -33,7 +32,6 @@ export class UserDataSource {
   async queryUserByID(id: string): Promise<DataSourceUser | null> {
     console.log(`Query user by id: ${id}`);
     const user = UserDatabase.find((u) => u.id === id);
-    await sleep(2000);
     return user ?? null;
   }
 

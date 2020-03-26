@@ -5,13 +5,20 @@ import { importSchema } from "graphql-import";
 
 import resolvers from "./resolvers";
 import { UserDataSource } from "./datasource/UserDataSource";
+import { UserDataLoader } from "./dataloader/UserDataLoader";
+import { ChatDataSource } from "./datasource/ChatDataSource";
 
 const apolloServer = new ApolloServer({
   typeDefs: importSchema(path.join(__dirname, "..", "schema", "root.graphql")),
   resolvers: resolvers,
   context: () => {
+    const chatDatasource = new ChatDataSource();
+    const userDatasource = new UserDataSource();
+    const userDataLoader = new UserDataLoader(userDatasource);
     return {
-      userDatasource: new UserDataSource(),
+      chatDatasource,
+      userDatasource,
+      userDataLoader,
     };
   },
   playground: {
