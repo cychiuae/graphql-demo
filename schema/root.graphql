@@ -18,4 +18,5 @@ type Conversation {
 
 type Query {
   user(id: ID!): User
+  conversation(id: ID!): Conversation
 }

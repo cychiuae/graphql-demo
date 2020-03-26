@@ -6,7 +6,7 @@ const ChatDatabase: {
 } = {
   Conversation: [
     {
-      id: "graphl-basic",
+      id: "graphql-basic",
       topic: "GraphQL Introduction",
       memberIds: ["kenchan", "rickmak", "yinbb"],
     },
@@ -21,14 +21,14 @@ const ChatDatabase: {
       id: "message-1",
       createdAt: new Date(2020, 1, 1, 12, 0),
       content: "Hi",
-      conversationID: "graphl-basic",
+      conversationID: "graphql-basic",
       senderID: "yinbb",
     },
     {
       id: "message-2",
       createdAt: new Date(2020, 1, 1, 12, 1),
       content: "What am I doing?",
-      conversationID: "graphl-basic",
+      conversationID: "graphql-basic",
       senderID: "rickmak",
     },
     {
@@ -42,7 +42,7 @@ const ChatDatabase: {
       id: "message-4",
       createdAt: new Date(2020, 1, 1, 12, 3),
       content: "Elliot. One more Please.",
-      conversationID: "graphl-basic",
+      conversationID: "graphql-basic",
       senderID: "kenchan",
     },
   ],
