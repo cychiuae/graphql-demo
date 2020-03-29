@@ -1,6 +1,13 @@
+type Company {
+  id: ID!
+  name: String!
+  employees: [User!]!
+}
+
 type User {
   id: ID!
   name: String!
+  company: Company!
 }
 
 type Message {
@@ -18,6 +25,7 @@ type Conversation {
 }
 
 type Query {
+  company(id: ID!): Company
   user(id: ID!): User
   conversation(id: ID!): Conversation
   conversations: [Conversation!]!

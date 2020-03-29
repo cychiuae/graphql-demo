@@ -6,14 +6,17 @@ import {
   queryConversationByID,
   queryAllConversations,
 } from "./conversation";
+import { companyResolvers, queryCompanyByID } from "./company";
 
 const resolvers: Resolvers = {
   Query: {
+    company: queryCompanyByID,
     conversation: queryConversationByID,
     conversations: queryAllConversations,
     user: queryUserByID,
   },
 
+  Company: companyResolvers,
   Conversation: conversationResolvers,
   Message: messageResolvers,
   User: userResolver,

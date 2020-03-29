@@ -10,6 +10,7 @@ generates:
       nonOptionalTypename: true
       avoidOptionals: true
       mappers:
+        Company: ../model/user#DataSourceCompany
         Conversation: ../model/message#DataSourceConversation
         Message: ../model/message#DataSourceMessage
         User: ../model/user#DataSourceUser
