@@ -4,6 +4,12 @@ YinYin Chiu
 Developer, Oursky
 yinyinchiu@oursky.com
 
+## Disclaimer
+- Have only worked with project using GraphQL for about 3 weeks
+- Not an expert
+- Still discover
+- Maybe Gesprek's developers are familiar the pros and cons than me
+
 ## What is GraphQL?
 
 According to official website
@@ -330,6 +336,7 @@ const Conversation = {
 
 ## Next time topics
 - Optimize resolvers with Dataloader
+    - Recently written a lot queryXXXByIDs to optimize resolvers
 - More Types
     - Input (types for mutation)
     - Enum
