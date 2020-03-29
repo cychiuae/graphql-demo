@@ -5,7 +5,7 @@ type User {
 
 type Message {
   id: ID!
-  createdAt: Int!
+  createdAt: String!
   content: String!
   sender: User!
 }
@@ -19,4 +19,5 @@ type Conversation {
 type Query {
   user(id: ID!): User
   conversation(id: ID!): Conversation
+  conversations: [Conversation!]!
 }

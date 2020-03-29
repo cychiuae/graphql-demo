@@ -14,3 +14,11 @@ export const queryConversationByID: QueryResolvers["conversation"] = (
 ) => {
   return context.chatDatasource.queryConversationByID(args.id);
 };
+
+export const queryAllConversations: QueryResolvers["conversations"] = (
+  _root,
+  _args,
+  context
+) => {
+  return context.chatDatasource.queryAllConversaions();
+};

@@ -49,6 +49,11 @@ const ChatDatabase: {
 };
 
 export class ChatDataSource {
+  async queryAllConversaions(): Promise<DataSourceConversation[]> {
+    console.log(`Query all conversations`);
+    return ChatDatabase.Conversation;
+  }
+
   async queryConversationByID(
     id: string
   ): Promise<DataSourceConversation | null> {

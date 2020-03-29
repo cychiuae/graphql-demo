@@ -185,6 +185,7 @@ query Messages($conversationID: ID!) {
     3. Subscription (won't talk about today)
 2. Field
     - The fundamental element in GraphQL
+    - Static typed
 
 ## Design GraphQL schema
 > _Model your business domain as a graph_
@@ -222,6 +223,7 @@ type Query {
 
 - Define how a field (property) of a schema (model) to be resolved
 - 80% of times you just do a direct resolve
+- Should be end with scalar type
 
 Function signature of a resolver (Apollo server)
 ```
@@ -262,7 +264,7 @@ const UserResolver = {
 ## Important
 It is not necessarily to resolve a value similar to the schema.
 i.e. `sender` is not necessarily to be resolved a DBUser. We can just resolve the sender id instead and
-let UserResolver to handle
+let UserResolver to handle. _You can resolve any thing you like_
 ```tsx
 const MessageResolvers = {
   ...
@@ -304,4 +306,44 @@ const Conversation = {
 }
 ```
 
+## Benefits from GraphQL
+
+- Introspection
+    - Know your data before execution
+- Statically typed
+    - However, very annoying about non optional type!
+- Will not over/under fetch
+    - You get only what you need
+- Will not be execute if field is not specified in query
+    - Save time & resources
+- Schema is the apidoc
+    - We are too lazy for writing doc
+
+## GraphQL is...
+- A query language
+    - Implementation is based on server
+- _Not_ A client side state management
+    - Not cache
+- _Not_ Limited to a specific db
+- _Not_ Limited to React / Framework by Facebook
+- _Not_ Limited to Http (work on any transport, not UDP)
+
+## Next time topics
+- Optimize resolvers with Dataloader
+- More Types
+    - Input (types for mutation)
+    - Enum
+    - Union
+- Fragments
+- Directives
+
 ## Demo
+
+## Q & A
+
+Any questions?
+
+## References
+.link https://graphql.org/ GraphQL Official site
+.link https://www.apollographql.com/docs/apollo-server/ Apollo server
+.link https://github.com/cychiuae/graphql-demo Repository for this present

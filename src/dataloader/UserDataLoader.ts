@@ -16,4 +16,8 @@ export class UserDataLoader {
   async loadUserByID(userID: string): Promise<DataSourceUser | null> {
     return this.userDataLoader.load(userID);
   }
+
+  async loadUsersByIDs(userIDs: string[]): Promise<(DataSourceUser | null)[]> {
+    return Promise.all(userIDs.map((id) => this.loadUserByID(id)));
+  }
 }
