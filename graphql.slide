@@ -1,0 +1,307 @@
+# Introduction to GraphQL
+
+YinYin Chiu
+Developer, Oursky
+yinyinchiu@oursky.com
+
+## What is GraphQL?
+
+According to official website
+
+_GraphQL is a query language for APIs and a runtime for fulfilling those queries with your existing data.
+GraphQL provides a complete and understandable description of the data in your API,
+gives clients the power to ask for exactly what they need and nothing more,
+makes it easier to evolve APIs over time, and enables powerful developer tools._
+
+## What does it actually mean?
+
+Basically is just an api...
+
+## Let's take a simple chat program as an example
+
+1. Conversation list
+- Show conversation topic
+- Show last sent message and its sender
+
+2. Message list
+- Show conversation topic
+- Show members info
+- Show all messages
+- Format: `Sender name (sent at): message content`
+
+To make it simple, assume no pagination
+
+## DB design
+
+```tsx
+interface User {
+  id: string;
+  name: string;
+  profilePicAssetName: string;
+}
+
+interface Conversation {
+  id: string;
+  topic: string;
+}
+
+interface ConversationUsers {
+  conversationID: string; // references Conversation.id
+  memberID: string; // references User.id
+}
+
+interface Message {
+  id: string;
+  createdAt: Date;
+  content: string;
+  conversationID: string; // references Conversation.id
+  senderID: string; // references User.id
+}
+```
+
+## Resouces model for REST API
+
+```
+interface User {
+  id: string;
+  name: string;
+  profilePicURL: URL;
+}
+
+interface Conversation {
+  id: string;
+  topic: string;
+  lastMessageUrl: URL;
+}
+
+interface Message {
+  id: string;
+  createdAt: Date;
+  content: string;
+  senderUrl: URL;
+}
+```
+
+## List of available REST APIs
+
+1 Conversation
+- GET /conversaions
+- GET /conversaions/:id
+- GET /conversaions/:id/members
+
+2. Message
+- GET /conversaions/:id/messages
+
+3. User
+- GET /users/:id
+
+## Fetch data for conversation list
+
+1. GET /conversations
+2. For each conversation, call `conversaion.lastMessageUrl` to get last message
+3. For each last message, call `message.senderURL` to get send name
+
+Skip example for message list...
+
+## What is the number of apis call required?
+
+- 1 + Number of conversations * (1 + 1)
+- e.g. 10 conversations -> 21 calls to construct a page
+
+## Solution
+
+- Nested resources in models, i.e.
+```
+{
+  "conversation": {
+    "id": 1,
+    "topic": "A conversatoin",
+    "lastMessage": {
+      "id": 1,
+      "createdAt": "2020-02-02",
+      "content": "A Message",
+      "sender": {
+        "id": 1,
+        "name": "Message sender",
+        "profilePicURL": "https://www.example.com/hot_picture.png"
+      }
+    }
+  }
+}
+```
+
+## Problems
+1. We don't know how deep we need to nest
+- Too much -> Overfetch
+- Not enough -> Underfetch
+2. Sometimes requires special apis, especially for in microservices design
+- Example: Role list page in Project L
+- Role stores in access service
+- User info stores in auth service
+- Before refactoring: 1 (fetch all roles) + Number of roles (fetch role users) api calls
+
+## What about if we are using GraphQL?
+
+## In Conversation list
+```
+query Conversations {
+  conversations {
+    id
+    topic
+    lastMessage {
+      sender {
+        name
+      }
+    }
+  }
+}
+```
+
+## In Message list
+```
+query Messages($conversationID: ID!) {
+  conversation(id: $conversationID) {
+    id
+    topic
+    members {
+      name
+    }
+    messages {
+      createdAt
+      content
+      sender {
+        name
+      }
+    }
+  }
+}
+```
+
+## Important concepts in GraphQL
+
+1. Operations
+    1. Query
+    2. Mutation (similar to Query, basically they are same)
+    3. Subscription (won't talk about today)
+2. Field
+    - The fundamental element in GraphQL
+
+## Design GraphQL schema
+> _Model your business domain as a graph_
+
+## Schema
+```graphql
+type User {
+  id: ID!
+  name: String!
+  profilePicURL: String!
+}
+
+type Message {
+  id: ID!
+  createdAt: Int!
+  content: String!
+  sender: User!
+}
+
+type Conversation {
+  id: ID!
+  topic: String!
+  members: [User!]!
+  messages: [Message!]!
+}
+
+\# Query, Mutation And Subscription will be the entry point of our graph
+type Query {
+  conversations: [Conversation!]!
+  conversation(id: ID!): Conversation
+}
+```
+
+## Resolvers
+
+- Define how a field (property) of a schema (model) to be resolved
+- 80% of times you just do a direct resolve
+
+Function signature of a resolver (Apollo server)
+```
+function resolver<Parent, Args, Context, Field>(
+  parent: Parent,
+  args: Args,
+  context: Context
+) => Field | Promise<Field>
+```
+- `parent`: The resolved value from the previous resolver
+- `args`: Arguments. Any fields can have arguments
+- `context`: An object shared across all resolvers
+
+Since one function for one field, we can focus on what should be resolved instead of
+how should be resolved
+
+## Example: Message & User resolver
+```tsx
+const MessageResolvers = {
+  // id and content resolvers are your 80% of times
+  id: (message: DBMessage) => message.id,
+  content: (message: DBMessage) => message.content
+
+  // sender: User!
+  sender: (message: DBMessage, _args: any, context: Context) => {
+    // We only think about what should be the message sender.
+    return context.db.query(DBUser).filter(DBUser.id.eq(message.senderID)).one();
+  },
+};
+
+const UserResolver = {
+  // Since message.sender resolved DBUser to us, we will receive DBUser as parent
+  id: (user: DBUser) => user.id,
+  name: (user: DBUser) => user.name,
+}
+```
+
+## Important
+It is not necessarily to resolve a value similar to the schema.
+i.e. `sender` is not necessarily to be resolved a DBUser. We can just resolve the sender id instead and
+let UserResolver to handle
+```tsx
+const MessageResolvers = {
+  ...
+  sender: (message: DBMessage) => message.senderID
+};
+
+const UserResolver = {
+  id: async (userID: string, _args: any, context: Context) =>  {
+    const user = await context.db.query(DBUser).filter(DBUser.id.eq(message.senderID)).one();
+    return user.id;
+  },
+  name: async (userID: string, _args: any, context: Context) =>  {
+    const user = await context.db.query(DBUser).filter(DBUser.id.eq(message.senderID)).one();
+    return user.name;
+  },
+}
+```
+
+**Pick the suitable value for your resolver!**
+
+## Define Query resolvers
+
+Query, Mutation or Subscription (entry points) are just resolvers
+
+```
+const Query = {
+  conversations: (root: never, args: any, context) => {
+    return context.db.query(DBConversation).all();
+  },
+  conversation: (root: never, args: {id: string}, context) => {
+    return context.db.query(DBConversation).filter(DBConversation.id.eq(args.id)).first();
+  },
+}
+
+const Conversation = {
+  ...
+  messages: (conversation: DBConversation) => ...,
+  ...
+}
+```
+
+## Demo
