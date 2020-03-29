@@ -1,4 +1,5 @@
 import { DataSourceMessage, DataSourceConversation } from "../model/message";
+import { sleep } from "../utils";
 
 const ChatDatabase: {
   Message: DataSourceMessage[];
@@ -68,5 +69,12 @@ export class ChatDataSource {
     return ChatDatabase.Message.filter(
       (m) => m.conversationID === conversationID
     );
+  }
+
+  async queryUnreadCountByConversationID(
+    _conversationID: string
+  ): Promise<number> {
+    await sleep(10000);
+    return 1;
   }
 }

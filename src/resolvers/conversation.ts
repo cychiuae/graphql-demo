@@ -5,6 +5,8 @@ export const conversationResolvers: ConversationResolvers = {
   topic: (conversation) => conversation.topic,
   messages: (conversation, _args, context) =>
     context.chatDatasource.queryMessagesByConversationID(conversation.id),
+  expensiveUnreadCount: (conversation, _args, context) =>
+    context.chatDatasource.queryUnreadCountByConversationID(conversation.id),
 };
 
 export const queryConversationByID: QueryResolvers["conversation"] = (
